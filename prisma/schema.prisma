@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  password        String
+  name            String?
+  role            String   @default("user")
+  profilePicture  String?   @db.Text
+  feedzEmployeeId Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  coinTransactions CoinTransaction[]
+  cartItems        CartItem[]
+
+  @@index([feedzEmployeeId])
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  name               String
+  description        String    @db.Text
+  price              Int
+  image              String    @db.Text
+  category           String
+  stock              Int       @default(0)
+  featured           Boolean   @default(false)
+  discountPercentOff Int?
+  discountEndDate    DateTime?
+  isActive           Boolean   @default(true)
+  deletedAt          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  transactionItems TransactionItem[]
+  cartItems        CartItem[]
+
+  @@index([category])
+  @@index([featured])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CoinTransaction {
+  id              String   @id @default(cuid())
+  userId          String
+  feedzEmployeeId Int
+  totalAmount     Int
+  type            Int
+  description     String
+  status          String   @default("pendente")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user  User              @relation(fields: [userId], references: [id])
+  items TransactionItem[]
+
+  @@index([userId])
+  @@index([feedzEmployeeId])
+  @@index([createdAt])
+  @@index([status])
+}
+
+model TransactionItem {
+  id               String   @id @default(cuid())
+  transactionId    String
+  productId        String
+  quantity         Int
+  unitPrice        Int
+  totalPrice       Int
+  productName      String?
+  productImage     String?  @db.Text
+  productUnitPrice Int?
+  createdAt        DateTime @default(now())
+
+  transaction CoinTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  product     Product         @relation(fields: [productId], references: [id])
+
+  @@index([transactionId])
+  @@index([productId])
+}

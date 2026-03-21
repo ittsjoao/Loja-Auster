@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: lojauster-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lojaAuster
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lojauster-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lojauster-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/lojaAuster
+      PORT: 3001
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      VITE_API_URL: ${VITE_API_URL:-https://loja.ittszap.com.br/api}
+      FEEDZ_API_KEY: ${FEEDZ_API_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      HR_EMAIL: ${HR_EMAIL:-rh@austercontabil.com.br}
+    ports:
+      - "3001:3001"
+    networks:
+      - proxy
+      - lojauster-internal
+    volumes:
+      - ./data/app:/app/data
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  proxy:
+    external: true
+  lojauster-internal:
+    driver: bridge

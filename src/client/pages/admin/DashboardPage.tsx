@@ -531,12 +531,14 @@ export default function DashboardPage() {
                               }
                             >
                               <TableCell>
-                                <Checkbox
-                                  checked={selectedUsers.includes(user.id)}
-                                  onCheckedChange={(checked) =>
-                                    toggleSelectUser(user.id, !!checked)
-                                  }
-                                />
+                                {!isProtectedUser(user) && (
+                                  <Checkbox
+                                    checked={selectedUsers.includes(user.id)}
+                                    onCheckedChange={(checked) =>
+                                      toggleSelectUser(user.id, !!checked)
+                                    }
+                                  />
+                                )}
                               </TableCell>
                               <TableCell>
                                 <Avatar>
@@ -552,85 +554,89 @@ export default function DashboardPage() {
                               <TableCell>{user.name || "-"}</TableCell>
                               <TableCell>{user.email}</TableCell>
                               <TableCell>
-                                <Select
-                                  value={user.role}
-                                  onValueChange={(value) =>
-                                    handleRoleChange(
-                                      user.id,
-                                      value as "admin" | "user",
-                                    )
-                                  }
-                                  disabled={isProtectedUser(user)}
-                                >
-                                  <SelectTrigger className="w-32">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="user">
-                                      Usuário
-                                    </SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                {isProtectedUser(user) ? (
+                                  <span className="text-sm text-muted-foreground">Admin</span>
+                                ) : (
+                                  <Select
+                                    value={user.role}
+                                    onValueChange={(value) =>
+                                      handleRoleChange(
+                                        user.id,
+                                        value as "admin" | "user",
+                                      )
+                                    }
+                                  >
+                                    <SelectTrigger className="w-32">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="user">
+                                        Usuário
+                                      </SelectItem>
+                                      <SelectItem value="admin">Admin</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
                               </TableCell>
                               <TableCell>
-                                <div className="flex space-x-2">
-                                  <Button
-                                    className="bg-blue-400 hover:bg-blue-400/85 text-white"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      setEditingUser(user);
-                                      setShowUserForm(true);
-                                    }}
-                                  >
-                                    <Pencil size={14} />
-                                  </Button>
-                                  <AlertDialog
-                                    open={deletingUserId === user.id}
-                                    onOpenChange={(isOpen) => {
-                                      if (!isOpen) setDeletingUserId(null);
-                                    }}
-                                  >
-                                    <AlertDialogTrigger asChild>
-                                      <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() =>
-                                          setDeletingUserId(user.id)
-                                        }
-                                        disabled={isProtectedUser(user)}
-                                      >
-                                        <Trash2 size={14} />
-                                      </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle className="flex items-center gap-2">
-                                          <AlertTriangle className="h-5 w-5 text-destructive" />
-                                          Deletar usuário
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Tem certeza que deseja deletar este
-                                          usuário? Essa ação é irreversível.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancelar
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
+                                {!isProtectedUser(user) && (
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      className="bg-blue-400 hover:bg-blue-400/85 text-white"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setEditingUser(user);
+                                        setShowUserForm(true);
+                                      }}
+                                    >
+                                      <Pencil size={14} />
+                                    </Button>
+                                    <AlertDialog
+                                      open={deletingUserId === user.id}
+                                      onOpenChange={(isOpen) => {
+                                        if (!isOpen) setDeletingUserId(null);
+                                      }}
+                                    >
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          variant="destructive"
+                                          size="sm"
                                           onClick={() =>
-                                            handleDeleteUser(user.id)
+                                            setDeletingUserId(user.id)
                                           }
-                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                         >
-                                          Deletar
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </div>
+                                          <Trash2 size={14} />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle className="flex items-center gap-2">
+                                            <AlertTriangle className="h-5 w-5 text-destructive" />
+                                            Deletar usuário
+                                          </AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Tem certeza que deseja deletar este
+                                            usuário? Essa ação é irreversível.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>
+                                            Cancelar
+                                          </AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() =>
+                                              handleDeleteUser(user.id)
+                                            }
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          >
+                                            Deletar
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                )}
                               </TableCell>
                             </TableRow>
                           ))

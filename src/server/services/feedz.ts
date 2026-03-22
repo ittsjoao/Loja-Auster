@@ -1,5 +1,5 @@
 const FEEDZ_KEY = process.env.FEEDZ_API_KEY;
-const FEEDZ_BASE = "https://app.feedz.com.br/v2/integração";
+const FEEDZ_BASE = "https://app.feedz.com.br/v2/integracao";
 
 async function feedzFetch(
   path: string,

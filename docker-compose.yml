@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:16-alpine
@@ -12,6 +10,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
     networks:
       - lojauster-internal
     healthcheck:
@@ -36,27 +36,22 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      VITE_API_URL: ${VITE_API_URL:-https://loja.ittszap.com.br/api}
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api
       FEEDZ_API_KEY: ${FEEDZ_API_KEY}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
-      HR_EMAIL: ${HR_EMAIL:-rh@austercontabil.com.br}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ${UPLOAD_DIR:-./uploads}:/app/uploads
     ports:
       - "3001:3001"
     networks:
-      - proxy
       - lojauster-internal
-    volumes:
-      - ./data/app:/app/data
 
 volumes:
   postgres_data:
-    driver: local
 
 networks:
-  proxy:
-    external: true
   lojauster-internal:
-    driver: bridge

@@ -3,14 +3,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 RUN apk add --no-cache openssl postgresql-client
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
 RUN npx prisma generate
-RUN npm run build
+RUN pnpm run build
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

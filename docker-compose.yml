@@ -10,8 +10,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
     networks:
       - lojauster-internal
     healthcheck:
@@ -36,7 +34,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://loja.seudominio.com.br/api}
       FEEDZ_API_KEY: ${FEEDZ_API_KEY}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
@@ -44,9 +42,21 @@ services:
       SMTP_PASS: ${SMTP_PASS}
       UPLOAD_DIR: /app/uploads
     volumes:
-      - ${UPLOAD_DIR:-./uploads}:/app/uploads
+      - ${UPLOAD_DIR}:/app/uploads
     ports:
       - "3001:3001"
+    networks:
+      - lojauster-internal
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: lojauster-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - app
     networks:
       - lojauster-internal
 
@@ -55,3 +65,5 @@ volumes:
 
 networks:
   lojauster-internal:
+    driver: bridge
+

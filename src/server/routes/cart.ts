@@ -71,6 +71,41 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ error: "Produto nao encontrado ou indisponivel" });
     }
 
+    // Single-purchase validation
+    if (product.singlePurchase) {
+      const existingCartItem = await prisma.cartItem.findUnique({
+        where: {
+          userId_productId: {
+            userId: req.currentUser!.id,
+            productId,
+          },
+        },
+      });
+      if (existingCartItem) {
+        return res.status(400).json({
+          error: "Este produto e de compra unica e ja esta no seu carrinho",
+        });
+      }
+
+      const existingPurchase = await prisma.transactionItem.findFirst({
+        where: {
+          productId,
+          transaction: {
+            userId: req.currentUser!.id,
+            status: { not: "cancelado" },
+            type: 1,
+          },
+        },
+      });
+      if (existingPurchase) {
+        return res.status(400).json({
+          error: "Voce ja possui este item. Itens de compra unica so podem ser adquiridos uma vez.",
+        });
+      }
+    }
+
+    const finalQuantity = product.singlePurchase ? 1 : quantity;
+
     const item = await prisma.cartItem.upsert({
       where: {
         userId_productId: {
@@ -79,12 +114,12 @@ router.post("/", async (req, res) => {
         },
       },
       update: {
-        quantity: { increment: quantity },
+        quantity: product.singlePurchase ? 1 : { increment: finalQuantity },
       },
       create: {
         userId: req.currentUser!.id,
         productId,
-        quantity,
+        quantity: finalQuantity,
       },
       include: { product: true },
     });
@@ -126,6 +161,14 @@ router.put("/:productId", async (req, res) => {
         where: { userId: req.currentUser!.id, productId },
       });
       return res.json({ success: true, removed: true });
+    }
+
+    // Single-purchase: prevent quantity change
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (product?.singlePurchase && quantity > 1) {
+      return res.status(400).json({
+        error: "Itens de compra unica tem quantidade fixa em 1",
+      });
     }
 
     const item = await prisma.cartItem.update({

@@ -24,6 +24,7 @@ import {
 import { ProductCard } from "@/components/products/ProductCard";
 import { productService } from "@/services/products";
 import type { Product, Category } from "@/types";
+import { useUserPurchases } from "@/hooks/use-user-purchases";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,6 +32,8 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+
+  const { hasPurchased } = useUserPurchases();
 
   const activeCategory = searchParams.get("category") || "";
   const activeSearch = searchParams.get("search") || "";
@@ -191,7 +194,11 @@ export default function ProductsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                alreadyPurchased={hasPurchased(product.id)}
+              />
             ))}
           </div>
         )}

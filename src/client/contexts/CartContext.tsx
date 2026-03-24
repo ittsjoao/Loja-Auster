@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import type { Product } from "../types";
 import { getDiscountedPrice } from "../utils/discount";
 import { cartService } from "../services/cart";
@@ -67,12 +74,31 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     (product: Product) => {
       if (!user) return;
 
+      // Single-purchase: prevent adding if already in cart
+      if (product.singlePurchase) {
+        const alreadyInCart = items.some(
+          (item) => item.product.id === product.id,
+        );
+        if (alreadyInCart) {
+          toast({
+            title: "Item de compra única",
+            description: "Este produto já está no seu carrinho",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       // Optimistic update
       setItems((prev) => {
         const idx = prev.findIndex((item) => item.product.id === product.id);
         if (idx >= 0) {
+          if (product.singlePurchase) return prev;
           const updated = [...prev];
-          updated[idx] = { ...updated[idx], quantity: updated[idx].quantity + 1 };
+          updated[idx] = {
+            ...updated[idx],
+            quantity: updated[idx].quantity + 1,
+          };
           return updated;
         }
         return [...prev, { product, quantity: 1 }];
@@ -86,13 +112,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       // Sync with server
       cartService.addItem(product.id).catch((err) => {
         console.error("Error adding to cart:", err);
-        // Revert on error - reload from server
         cartService.getCart().then((cartItems) => {
-          setItems(cartItems.map((ci) => ({ product: ci.product, quantity: ci.quantity })));
+          setItems(
+            cartItems.map((ci) => ({
+              product: ci.product,
+              quantity: ci.quantity,
+            })),
+          );
         });
       });
     },
-    [user, toast],
+    [user, items, toast],
   );
 
   const removeFromCart = useCallback(
@@ -114,7 +144,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       cartService.removeItem(productId).catch((err) => {
         console.error("Error removing from cart:", err);
         cartService.getCart().then((cartItems) => {
-          setItems(cartItems.map((ci) => ({ product: ci.product, quantity: ci.quantity })));
+          setItems(
+            cartItems.map((ci) => ({
+              product: ci.product,
+              quantity: ci.quantity,
+            })),
+          );
         });
       });
     },
@@ -141,7 +176,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       cartService.updateQuantity(productId, quantity).catch((err) => {
         console.error("Error updating cart:", err);
         cartService.getCart().then((cartItems) => {
-          setItems(cartItems.map((ci) => ({ product: ci.product, quantity: ci.quantity })));
+          setItems(
+            cartItems.map((ci) => ({
+              product: ci.product,
+              quantity: ci.quantity,
+            })),
+          );
         });
       });
     },

@@ -40,6 +40,13 @@ export const redemptionService = {
     return data.transactions || [];
   },
 
+  getUserPurchases: async (): Promise<string[]> => {
+    const data = await apiFetch<{ productIds: string[] }>(
+      "/redemption/user-purchases",
+    );
+    return data.productIds || [];
+  },
+
   getStats: async (): Promise<RedemptionStats> => {
     const data = await apiFetch<{ stats: RedemptionStats }>(
       "/redemption/stats",

@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/carousel";
 import { ProductCard } from "@/components/products/ProductCard";
 import { productService } from "@/services/products";
+import { useUserPurchases } from "@/hooks/use-user-purchases";
 import type { Product } from "@/types";
 
 export default function HomePage() {
   const [featured, setFeatured] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { hasPurchased } = useUserPurchases();
 
   useEffect(() => {
     async function load() {
@@ -107,7 +109,7 @@ export default function HomePage() {
                   key={product.id}
                   className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} alreadyPurchased={hasPurchased(product.id)} />
                 </CarouselItem>
               ))}
             </CarouselContent>

@@ -174,39 +174,45 @@ export default function CartPage() {
                         </div>
 
                         <div className="flex justify-between items-center mt-3">
-                          <div className="flex items-center border rounded-lg">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              disabled={isCheckingOut}
-                              onClick={() =>
-                                updateQuantity(
-                                  item.product.id,
-                                  item.quantity - 1,
-                                )
-                              }
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-8 text-center text-sm font-semibold">
-                              {item.quantity}
+                          {item.product.singlePurchase ? (
+                            <span className="text-xs text-muted-foreground px-2">
+                              Compra unica (qtd: 1)
                             </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              disabled={isCheckingOut}
-                              onClick={() =>
-                                updateQuantity(
-                                  item.product.id,
-                                  item.quantity + 1,
-                                )
-                              }
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          ) : (
+                            <div className="flex items-center border rounded-lg">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                disabled={isCheckingOut}
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.product.id,
+                                    item.quantity - 1,
+                                  )
+                                }
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-8 text-center text-sm font-semibold">
+                                {item.quantity}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                disabled={isCheckingOut}
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.product.id,
+                                    item.quantity + 1,
+                                  )
+                                }
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"

@@ -19,6 +19,7 @@ function transformProduct(raw: Record<string, unknown>): Product {
     category: raw.category as string,
     stock: raw.stock as number,
     featured: (raw.featured as boolean) ?? false,
+    singlePurchase: (raw.singlePurchase as boolean) ?? false,
     isActive: (raw.isActive as boolean) ?? true,
     deletedAt: raw.deletedAt as string | undefined,
     discount,

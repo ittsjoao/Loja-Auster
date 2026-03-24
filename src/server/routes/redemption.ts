@@ -85,6 +85,45 @@ router.post("/redeem", requireAuth, async (req, res) => {
       });
     }
 
+    // Single-purchase validation
+    const singlePurchaseProducts = products.filter((p) => p.singlePurchase);
+    if (singlePurchaseProducts.length > 0) {
+      const singlePurchaseIds = singlePurchaseProducts.map((p) => p.id);
+
+      for (const item of items) {
+        if (singlePurchaseIds.includes(item.productId) && item.quantity > 1) {
+          const product = productMap.get(item.productId)!;
+          return res.status(400).json({
+            error: `"${product.name}" e de compra unica. Quantidade maxima: 1`,
+          });
+        }
+      }
+
+      const existingPurchases = await prisma.transactionItem.findMany({
+        where: {
+          productId: { in: singlePurchaseIds },
+          transaction: {
+            userId: user.id,
+            status: { not: "cancelado" },
+            type: 1,
+          },
+        },
+        select: { productId: true },
+        distinct: ["productId"],
+      });
+
+      if (existingPurchases.length > 0) {
+        const alreadyOwned = existingPurchases.map((ep) => ep.productId);
+        const blockedNames = alreadyOwned
+          .map((id) => productMap.get(id)?.name)
+          .filter(Boolean);
+        return res.status(400).json({
+          error: `Voce ja possui: ${blockedNames.join(", ")}. Itens de compra unica so podem ser adquiridos uma vez.`,
+          blockedProductIds: alreadyOwned,
+        });
+      }
+    }
+
     // Check balance
     const currentBalance = await getCoinsBalance(user.feedzEmployeeId);
     if (currentBalance === null || currentBalance < totalCost) {
@@ -229,6 +268,31 @@ router.post("/credit", async (req, res) => {
   } catch (error) {
     console.error("[CREDIT] Error:", error);
     res.status(500).json({ error: "Erro ao processar estorno" });
+  }
+});
+
+// GET /user-purchases - Get product IDs the user has active (non-cancelled) purchases for
+router.get("/user-purchases", requireAuth, async (req, res) => {
+  try {
+    const userId = req.currentUser!.id;
+
+    const purchasedItems = await prisma.transactionItem.findMany({
+      where: {
+        transaction: {
+          userId,
+          status: { not: "cancelado" },
+          type: 1,
+        },
+      },
+      select: { productId: true },
+      distinct: ["productId"],
+    });
+
+    const productIds = purchasedItems.map((item) => item.productId);
+    res.json({ success: true, productIds });
+  } catch (error) {
+    console.error("[USER-PURCHASES] Error:", error);
+    res.status(500).json({ error: "Erro ao buscar compras do usuario" });
   }
 });
 

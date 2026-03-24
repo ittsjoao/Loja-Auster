@@ -11,9 +11,10 @@ import type { Product } from "@/types";
 
 interface Props {
   product: Product;
+  alreadyPurchased?: boolean;
 }
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, alreadyPurchased }: Props) {
   const { addToCart } = useCart();
   const discounted = hasValidDiscount(product);
   const finalPrice = getDiscountedPrice(product);
@@ -87,12 +88,14 @@ export function ProductCard({ product }: Props) {
       <CardFooter className="p-4 pt-0">
         <Button
           onClick={() => addToCart(product)}
-          disabled={outOfStock}
+          disabled={outOfStock || (product.singlePurchase && alreadyPurchased)}
           className="w-full bg-gradient-to-r from-default-blue to-dark-blue hover:from-default-blue/90 hover:to-dark-blue/90"
           size="sm"
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
-          Adicionar
+          {product.singlePurchase && alreadyPurchased
+            ? "Voce ja possui este item"
+            : "Adicionar"}
         </Button>
       </CardFooter>
     </Card>

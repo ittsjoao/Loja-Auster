@@ -59,6 +59,7 @@ export function ProductForm({
       category: product?.category || "",
       stock: product?.stock || 0,
       featured: product?.featured || false,
+      singlePurchase: product?.singlePurchase || false,
     },
   });
 
@@ -173,6 +174,20 @@ export function ProductForm({
           />
           <Label>Destaque</Label>
         </div>
+      </div>
+
+      {/* Single Purchase */}
+      <div className="border rounded-lg p-4">
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={watch("singlePurchase")}
+            onCheckedChange={(checked) => setValue("singlePurchase", checked)}
+          />
+          <Label>Compra unica</Label>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Cada usuário só poderá comprar 1 unidade deste produto
+        </p>
       </div>
 
       {/* Discount */}

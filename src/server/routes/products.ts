@@ -92,7 +92,7 @@ router.get("/:id", async (req, res) => {
 // POST / - Create product
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, image, category, stock = 0, featured = false, discountPercentOff, discountEndDate } = req.body;
+    const { name, description, price, image, category, stock = 0, featured = false, singlePurchase = false, discountPercentOff, discountEndDate } = req.body;
 
     if (!name || !description || price === undefined || !image || !category) {
       return res.status(400).json({ error: "Campos obrigatorios: name, description, price, image, category" });
@@ -119,6 +119,7 @@ router.post("/", async (req, res) => {
         category: normalizedCategory,
         stock: Math.max(0, Math.round(stock)),
         featured,
+        singlePurchase,
         ...(discountPercentOff && discountEndDate
           ? {
               discountPercentOff: Math.round(discountPercentOff),

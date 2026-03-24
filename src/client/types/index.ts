@@ -17,6 +17,7 @@ export interface Product {
   category: string;
   stock: number;
   featured?: boolean;
+  singlePurchase?: boolean;
   discount?: {
     percentOff: number;
     endDate: string;

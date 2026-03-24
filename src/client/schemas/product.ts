@@ -8,6 +8,7 @@ export const productSchema = z.object({
   category: z.string().min(1, "Categoria e obrigatoria"),
   stock: z.number().int().min(0, "Estoque deve ser positivo"),
   featured: z.boolean().default(false),
+  singlePurchase: z.boolean().default(false),
 });
 
 export const discountSchema = z.object({

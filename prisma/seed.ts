@@ -8,9 +8,9 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const PROTECTED_ADMIN = {
-  email: "admin@admin.com",
-  password: "admin",
-  name: "Admin",
+  email: "ti@austercontabil.com.br",
+  password: "Gere1288246@",
+  name: "TI Auster",
   role: "admin",
 };
 

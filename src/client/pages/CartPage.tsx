@@ -293,9 +293,9 @@ export default function CartPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Confirmar compra</AlertDialogTitle>
               <AlertDialogDescription>
-                Voce esta prestes a resgatar{" "}
+                Você está prestes a resgatar{" "}
                 {items.reduce((t, i) => t + i.quantity, 0)} item(ns) por{" "}
-                {formatMoney(totalPrice)}. Esta ação nao pode ser desfeita.
+                {formatMoney(totalPrice)}. Esta ação não pode ser desfeita.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

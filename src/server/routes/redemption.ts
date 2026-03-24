@@ -94,7 +94,7 @@ router.post("/redeem", requireAuth, async (req, res) => {
         if (singlePurchaseIds.includes(item.productId) && item.quantity > 1) {
           const product = productMap.get(item.productId)!;
           return res.status(400).json({
-            error: `"${product.name}" e de compra unica. Quantidade maxima: 1`,
+            error: `"${product.name}" é de compra única. Quantidade máxima: 1`,
           });
         }
       }

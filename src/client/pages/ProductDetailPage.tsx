@@ -18,7 +18,11 @@ import {
 import { useCart } from "@/contexts/CartContext";
 import { useUserPurchases } from "@/hooks/use-user-purchases";
 import { productService } from "@/services/products";
-import { hasValidDiscount, getDiscountedPrice, getDiscountTimeRemaining } from "@/utils/discount";
+import {
+  hasValidDiscount,
+  getDiscountedPrice,
+  getDiscountTimeRemaining,
+} from "@/utils/discount";
 import { formatMoney } from "@/utils/format";
 import type { Product } from "@/types";
 
@@ -77,7 +81,8 @@ export default function ProductDetailPage() {
     ? getDiscountTimeRemaining(product.discount.endDate)
     : null;
   const outOfStock = product.stock <= 0;
-  const isSinglePurchaseBlocked = product.singlePurchase && hasPurchased(product.id);
+  const isSinglePurchaseBlocked =
+    product.singlePurchase && hasPurchased(product.id);
 
   const handleAdd = () => {
     const qty = product.singlePurchase ? 1 : quantity;
@@ -120,7 +125,10 @@ export default function ProductDetailPage() {
 
           {/* Info */}
           <div>
-            <Badge variant="outline" className="text-teal border-teal capitalize mb-3">
+            <Badge
+              variant="outline"
+              className="text-teal border-teal capitalize mb-3"
+            >
               {product.category}
             </Badge>
 
@@ -144,7 +152,9 @@ export default function ProductDetailPage() {
                   -{product.discount!.percentOff}% OFF
                 </Badge>
                 {timeLeft && (
-                  <span className="text-sm text-teal font-medium">{timeLeft}</span>
+                  <span className="text-sm text-teal font-medium">
+                    {timeLeft}
+                  </span>
                 )}
               </div>
             )}
@@ -160,10 +170,15 @@ export default function ProductDetailPage() {
             {/* Stock */}
             <p className="text-sm mb-4">
               {outOfStock ? (
-                <span className="text-default-red font-medium">Produto esgotado</span>
+                <span className="text-default-red font-medium">
+                  Produto esgotado
+                </span>
               ) : (
                 <span className="text-muted-foreground">
-                  <span className="font-medium text-foreground">{product.stock}</span> em estoque
+                  <span className="font-medium text-foreground">
+                    {product.stock}
+                  </span>{" "}
+                  em estoque
                 </span>
               )}
             </p>
@@ -180,11 +195,15 @@ export default function ProductDetailPage() {
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-12 text-center font-semibold">{quantity}</span>
+                  <span className="w-12 text-center font-semibold">
+                    {quantity}
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    onClick={() =>
+                      setQuantity(Math.min(product.stock, quantity + 1))
+                    }
                     disabled={outOfStock}
                   >
                     <Plus className="h-4 w-4" />
@@ -200,7 +219,7 @@ export default function ProductDetailPage() {
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 {isSinglePurchaseBlocked
-                  ? "Voce ja possui este item"
+                  ? "Você já possui este item"
                   : "Adicionar ao carrinho"}
               </Button>
             </div>

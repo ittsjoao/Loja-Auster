@@ -66,9 +66,13 @@ router.post("/", async (req, res) => {
     }
 
     // Verify product exists and is active
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
     if (!product || !product.isActive || product.deletedAt) {
-      return res.status(404).json({ error: "Produto nao encontrado ou indisponivel" });
+      return res
+        .status(404)
+        .json({ error: "Produto nao encontrado ou indisponivel" });
     }
 
     // Single-purchase validation
@@ -83,7 +87,7 @@ router.post("/", async (req, res) => {
       });
       if (existingCartItem) {
         return res.status(400).json({
-          error: "Este produto e de compra unica e ja esta no seu carrinho",
+          error: "Este produto é de compra única e já está no seu carrinho",
         });
       }
 
@@ -99,7 +103,8 @@ router.post("/", async (req, res) => {
       });
       if (existingPurchase) {
         return res.status(400).json({
-          error: "Voce ja possui este item. Itens de compra unica so podem ser adquiridos uma vez.",
+          error:
+            "Voce ja possui este item. Itens de compra unica so podem ser adquiridos uma vez.",
         });
       }
     }
@@ -164,7 +169,9 @@ router.put("/:productId", async (req, res) => {
     }
 
     // Single-purchase: prevent quantity change
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
     if (product?.singlePurchase && quantity > 1) {
       return res.status(400).json({
         error: "Itens de compra unica tem quantidade fixa em 1",

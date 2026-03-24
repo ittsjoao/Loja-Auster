@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useCart } from "@/contexts/CartContext";
-import { hasValidDiscount, getDiscountedPrice, getDiscountTimeRemaining } from "@/utils/discount";
+import {
+  hasValidDiscount,
+  getDiscountedPrice,
+  getDiscountTimeRemaining,
+} from "@/utils/discount";
 import { formatMoney } from "@/utils/format";
 import type { Product } from "@/types";
 
@@ -94,7 +98,7 @@ export function ProductCard({ product, alreadyPurchased }: Props) {
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
           {product.singlePurchase && alreadyPurchased
-            ? "Voce ja possui este item"
+            ? "Você já possui este item"
             : "Adicionar"}
         </Button>
       </CardFooter>

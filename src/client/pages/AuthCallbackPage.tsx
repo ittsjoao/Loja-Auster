@@ -21,8 +21,16 @@ export default function AuthCallbackPage() {
     }
 
     authService.setSsoUserId(uid);
-    refreshUser()
-      .then(() => navigate("/", { replace: true }))
+    authService
+      .getCurrentUser()
+      .then(async (loggedUser) => {
+        if (!loggedUser) {
+          navigate("/login?authError=authentik", { replace: true });
+          return;
+        }
+        await refreshUser();
+        navigate("/", { replace: true });
+      })
       .catch(() => navigate("/login?authError=authentik", { replace: true }));
   }, [params, navigate, refreshUser]);
 

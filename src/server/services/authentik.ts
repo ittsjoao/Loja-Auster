@@ -16,11 +16,16 @@ async function getConfig(): Promise<client.Configuration> {
     throw new Error("Authentik nao esta configurado");
   }
   if (!configPromise) {
-    configPromise = client.discovery(
-      new URL(ISSUER as string),
-      CLIENT_ID as string,
-      CLIENT_SECRET as string,
-    );
+    configPromise = client
+      .discovery(
+        new URL(ISSUER as string),
+        CLIENT_ID as string,
+        CLIENT_SECRET as string,
+      )
+      .catch((err) => {
+        configPromise = null;
+        throw err;
+      });
   }
   return configPromise;
 }

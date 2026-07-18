@@ -69,6 +69,24 @@ router.get("/callback", async (req, res) => {
 
     let user = await prisma.user.findUnique({ where: { email } });
 
+    if (!user) {
+      // Email didn't match — the subject may already be linked to an account
+      // whose email changed in the IdP. Match by the stable Authentik sub and
+      // reconcile the email onto that record.
+      const linked = await prisma.user.findUnique({
+        where: { authentikSub: sub },
+      });
+      if (linked) {
+        user =
+          linked.email === email
+            ? linked
+            : await prisma.user.update({
+                where: { id: linked.id },
+                data: { email },
+              });
+      }
+    }
+
     if (user) {
       // Link the Authentik subject on first SSO login
       if (!user.authentikSub) {

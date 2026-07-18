@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
       },
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       return res.status(401).json({ error: "Credenciais invalidas" });
     }
 

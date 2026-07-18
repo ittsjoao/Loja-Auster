@@ -9,6 +9,7 @@ import { RequireAuth } from "./components/shared/RequireAuth";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
+import AuthCallbackPage from "./pages/AuthCallbackPage";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -36,6 +37,7 @@ export default function App() {
                   <Route path="/" element={<Index />} />
                   <Route path="/home" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
+                  <Route path="/auth/callback" element={<AuthCallbackPage />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/product/:id" element={<ProductDetailPage />} />
                   <Route path="/cart" element={<CartPage />} />

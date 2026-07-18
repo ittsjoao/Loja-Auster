@@ -1,9 +1,11 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
+import authentikRoutes from "./routes/authentik.js";
 import productRoutes from "./routes/products.js";
 import redemptionRoutes from "./routes/redemption.js";
 import emailRoutes from "./routes/email.js";
@@ -19,10 +21,12 @@ const __dirname = path.dirname(__filename);
 
 // Middlewares
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Routes
+app.use("/api/auth/authentik", authentikRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/redemption", redemptionRoutes);

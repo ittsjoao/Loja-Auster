@@ -75,6 +75,12 @@ export async function exchangeCallback(
     throw new Error("Authentik nao retornou um email valido");
   }
 
+  // Only trust an email the IdP asserts as verified — prevents account
+  // takeover by linking a store account to an unverified/self-asserted email.
+  if (claims.email_verified !== true) {
+    throw new Error("Authentik nao confirmou o email (email_verified)");
+  }
+
   return {
     email: claims.email,
     name: typeof claims.name === "string" ? claims.name : undefined,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Loader2, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,23 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const authEnabled = import.meta.env.VITE_AUTHENTIK_ENABLED === "true";
+
+  useEffect(() => {
+    const err = new URLSearchParams(window.location.search).get("authError");
+    if (!err) return;
+    const messages: Record<string, string> = {
+      feedz: "Email nao encontrado ou inativo no Feedz.",
+      session: "Sessao de login expirada. Tente novamente.",
+      authentik: "Falha ao entrar com o Authentik. Tente novamente.",
+    };
+    toast({
+      title: "Erro ao entrar",
+      description: messages[err] || messages.authentik,
+      variant: "destructive",
+    });
+    window.history.replaceState({}, "", "/login");
+  }, [toast]);
 
   if (user) {
     navigate("/");
@@ -120,6 +137,22 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          {authEnabled && (
+            <>
+              <div className="my-6 flex items-center gap-3 text-white/30 text-xs">
+                <span className="h-px flex-1 bg-white/15" />
+                ou
+                <span className="h-px flex-1 bg-white/15" />
+              </div>
+              <a
+                href={`${import.meta.env.VITE_API_URL || "/api"}/auth/authentik/login`}
+                className="w-full inline-flex items-center justify-center rounded-md border border-white/20 bg-white/10 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                Entrar com Authentik
+              </a>
+            </>
+          )}
 
           {/* Footer */}
           <div className="mt-6 text-center">

@@ -130,4 +130,9 @@ export const authService = {
     }
     return true;
   },
+
+  setSsoUserId: (uid: string): void => {
+    localStorage.setItem("currentUserId", uid);
+    localStorage.removeItem("currentUser");
+  },
 };

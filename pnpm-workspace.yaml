@@ -1,0 +1,8 @@
+# pnpm 11 bloqueia scripts de build de dependencias por padrao (strictDepBuilds).
+# Estes precisam rodar: Prisma (engine/generate), esbuild e swc (usados no build).
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@swc/core': true
+  esbuild: true
+  prisma: true

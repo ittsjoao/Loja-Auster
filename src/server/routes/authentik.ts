@@ -41,10 +41,10 @@ router.get("/login", async (_req, res) => {
 
 // GET /callback — finish the OIDC flow
 router.get("/callback", async (req, res) => {
-  const base = frontendBase();
   if (!isAuthentikEnabled()) {
     return res.status(404).json({ error: "Authentik nao esta habilitado" });
   }
+  const base = frontendBase();
 
   const codeVerifier = req.cookies?.ak_verifier as string | undefined;
   const state = req.cookies?.ak_state as string | undefined;

@@ -10,6 +10,13 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+# Vite inlines VITE_* at build time; pass them as build args so the
+# client bundle is compiled with the correct values (.env is dockerignored).
+ARG VITE_AUTHENTIK_ENABLED
+ARG VITE_API_URL=/api
+ENV VITE_AUTHENTIK_ENABLED=$VITE_AUTHENTIK_ENABLED
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npx prisma generate
 RUN pnpm run build
 

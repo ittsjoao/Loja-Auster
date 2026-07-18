@@ -8,7 +8,7 @@ done
 echo "Database is ready."
 
 echo "Running Prisma migrations..."
-npx prisma db push
+npx prisma db push --accept-data-loss
 
 echo "Running seed..."
 npx tsx prisma/seed.ts

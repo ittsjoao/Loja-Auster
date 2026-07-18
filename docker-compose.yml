@@ -1,37 +1,18 @@
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: lojauster-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: lojaAuster
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - lojauster-internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_AUTHENTIK_ENABLED: ${VITE_AUTHENTIK_ENABLED:-false}
+        VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: lojauster-app
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/lojaAuster
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/lojaAuster
       PORT: 3001
       NODE_ENV: production
-      DB_HOST: db
+      DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://loja.seudominio.com.br/api}
@@ -40,28 +21,24 @@ services:
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
+      AUTHENTIK_ISSUER_URL: ${AUTHENTIK_ISSUER_URL}
+      AUTHENTIK_CLIENT_ID: ${AUTHENTIK_CLIENT_ID}
+      AUTHENTIK_CLIENT_SECRET: ${AUTHENTIK_CLIENT_SECRET}
+      AUTHENTIK_REDIRECT_URI: ${AUTHENTIK_REDIRECT_URI}
+      # Authentik is served with the internal AD CA cert; trust it like the other
+      # internal services (same as outline) instead of bundling the CA.
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
       UPLOAD_DIR: /app/uploads
     volumes:
       - ${UPLOAD_DIR}:/app/uploads
     ports:
       - "3001:3001"
+    dns:
+      # AD DNS: resolves internal *.auster.local names (e.g. the Authentik issuer)
+      - 10.10.30.242
     networks:
-      - lojauster-internal
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: lojauster-tunnel
-    restart: unless-stopped
-    command: tunnel --no-autoupdate --protocol http2 run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-    depends_on:
-      - app
-    networks:
-      - lojauster-internal
-
-volumes:
-  postgres_data:
+      - proxy
 
 networks:
-  lojauster-internal:
-    driver: bridge
-
+  proxy:
+    external: true

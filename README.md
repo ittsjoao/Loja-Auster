@@ -53,7 +53,36 @@ SMTP_PORT=587
 SMTP_USER=seu-email@exemplo.com
 SMTP_PASS=sua-senha-smtp
 HR_EMAIL=rh@suaempresa.com.br
-UPLOAD_DIR=./uploads
+S3_ENDPOINT=localhost
+S3_PORT=9000
+S3_USE_SSL=false
+S3_ACCESS_KEY=minioadmin
+S3_SECRET_KEY=minioadmin
+S3_BUCKET=lojauster
+MAX_UPLOAD_BYTES=10485760
+```
+
+### Imagens (MinIO)
+
+As imagens de produtos e perfis ficam num bucket MinIO, criado sozinho no
+primeiro upload se faltar. O bucket **nao e publico**: a aplicacao serve os
+bytes em `/api/images/<chave>`, que e o valor gravado no banco. Assim o MinIO
+fica so na rede interna, sem host publico nem presigned URL.
+
+| Variavel | Observacao |
+|----------|------------|
+| `S3_ENDPOINT` | host ou nome do container do MinIO na rede (`minio`), **nao** o host publico e **nao** uma URL |
+| `S3_PORT`, `S3_USE_SSL` | opcionais; padrao `9000` e `false` |
+| `S3_ACCESS_KEY`, `S3_SECRET_KEY` | os mesmos `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` |
+| `S3_BUCKET` | opcional; padrao `lojauster`, criado sozinho |
+| `MAX_UPLOAD_BYTES` | opcional; padrao 10 MB |
+
+MinIO local para desenvolvimento:
+
+```bash
+docker run -d --name minio -p 9000:9000 -p 9001:9001 \
+  -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
+  minio/minio server /data --console-address ":9001"
 ```
 
 ### Scripts disponiveis

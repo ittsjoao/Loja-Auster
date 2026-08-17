@@ -1,53 +1,48 @@
 import { Router } from "express";
-import fs from "fs";
-import path from "path";
-import crypto from "crypto";
+import { saveImage, MAX_UPLOAD_BYTES } from "../lib/storage.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
-const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR || "./uploads");
-
-// Ensure upload directory exists
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
 router.use(requireAuth);
 
-// POST / - Upload base64 image, save to disk, return URL
+// POST / - Recebe imagem base64, grava no bucket MinIO e devolve a URL da rota
+// que serve a imagem (/api/images/<chave>). O bucket nao e publico.
 router.post("/", async (req, res) => {
   try {
     const { image, folder = "general" } = req.body;
 
     if (!image || typeof image !== "string") {
-      return res.status(400).json({ error: "Campo 'image' (base64) e obrigatorio" });
+      return res
+        .status(400)
+        .json({ error: "Campo 'image' (base64) e obrigatorio" });
     }
 
-    // Parse base64 data URL: data:image/png;base64,iVBOR...
+    // data:image/png;base64,iVBOR...
     const match = image.match(/^data:image\/(\w+);base64,(.+)$/);
     if (!match) {
-      // Not base64 - might be a regular URL, just return it as-is
+      // Nao e base64 - provavelmente ja e uma URL, devolve como esta
       return res.json({ url: image });
     }
 
-    const ext = match[1] === "jpeg" ? "jpg" : match[1];
+    const mimeSubtype = match[1];
+    const ext = mimeSubtype === "jpeg" ? "jpg" : mimeSubtype;
     const buffer = Buffer.from(match[2], "base64");
 
-    // Create subfolder (products, profiles, etc.)
-    const subDir = path.join(UPLOAD_DIR, folder);
-    if (!fs.existsSync(subDir)) {
-      fs.mkdirSync(subDir, { recursive: true });
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+      return res.status(413).json({
+        error: `Imagem muito grande (max ${Math.round(MAX_UPLOAD_BYTES / 1024 / 1024)} MB)`,
+      });
     }
 
-    // Generate unique filename
-    const filename = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}.${ext}`;
-    const filePath = path.join(subDir, filename);
+    const storageKey = await saveImage({
+      folder: String(folder),
+      ext,
+      mimeType: `image/${mimeSubtype}`,
+      body: buffer,
+    });
 
-    fs.writeFileSync(filePath, buffer);
-
-    const url = `/uploads/${folder}/${filename}`;
-    return res.json({ url });
+    return res.json({ url: `/api/images/${storageKey}` });
   } catch (error) {
     console.error("[UPLOAD] Error:", error);
     return res.status(500).json({ error: "Erro ao fazer upload" });

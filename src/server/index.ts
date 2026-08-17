@@ -11,6 +11,7 @@ import redemptionRoutes from "./routes/redemption.js";
 import emailRoutes from "./routes/email.js";
 import cartRoutes from "./routes/cart.js";
 import uploadRoutes from "./routes/upload.js";
+import imageRoutes from "./routes/images.js";
 import { getCoinsBalance } from "./services/feedz.js";
 
 const app = express();
@@ -33,10 +34,7 @@ app.use("/api/redemption", redemptionRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/upload", uploadRoutes);
-
-// Serve uploaded files as static assets
-const uploadDir = path.resolve(process.env.UPLOAD_DIR || "./uploads");
-app.use("/uploads", express.static(uploadDir));
+app.use("/api/images", imageRoutes);
 
 // Feedz coin balance proxy
 app.get("/api/coins/:id", async (req, res) => {

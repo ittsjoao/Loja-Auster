@@ -1,5 +1,14 @@
 services:
   app:
+    # Sem build: o Dokploy reusa a imagem ja existente com essa tag e nenhum
+    # commit novo chega a producao. VITE_* precisa ser build arg porque o Vite
+    # inlina essas variaveis no bundle - em runtime nao tem efeito.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_AUTHENTIK_ENABLED: ${VITE_AUTHENTIK_ENABLED:-false}
+        VITE_API_URL: ${VITE_API_URL:-/api}
     image: loja-auster-app:latest
     container_name: lojauster-app
     restart: unless-stopped

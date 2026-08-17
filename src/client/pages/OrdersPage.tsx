@@ -23,6 +23,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Pagination, usePagination } from "@/components/shared/Pagination";
 import { redemptionService } from "@/services/redemption";
 import { formatMoney, formatDate } from "@/utils/format";
 import { RefreshCw, Package, ShoppingBag, Eye } from "lucide-react";
@@ -57,6 +58,8 @@ export default function OrdersPage() {
     (acc, t) => ({ ...acc, [t.status]: (acc[t.status] || 0) + 1 }),
     {} as Record<string, number>,
   );
+
+  const ordersPage = usePagination(filtered, 10, statusFilter);
 
   return (
     <Layout>
@@ -121,7 +124,7 @@ export default function OrdersPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filtered.map((tx) => (
+                {ordersPage.pageItems.map((tx) => (
                   <Card key={tx.id}>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-4">
@@ -296,6 +299,7 @@ export default function OrdersPage() {
                     </CardContent>
                   </Card>
                 ))}
+                <Pagination {...ordersPage} />
               </div>
             )}
           </TabsContent>

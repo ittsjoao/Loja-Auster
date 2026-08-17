@@ -41,6 +41,7 @@ import { productService } from "@/services/products";
 import { ProductForm } from "@/components/products/ProductForm";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { UserForm } from "@/components/admin/UserForm";
+import { Pagination, usePagination } from "@/components/shared/Pagination";
 import type { Product, User, Category } from "@/types";
 import {
   Sheet,
@@ -102,6 +103,9 @@ export default function DashboardPage() {
   const [isDeleteUsersDialogOpen, setIsDeleteUsersDialogOpen] = useState(false);
   const [isDeleteProductsDialogOpen, setIsDeleteProductsDialogOpen] =
     useState(false);
+
+  const usersPage = usePagination(users);
+  const productsPage = usePagination(products, 10, showInactiveProducts);
 
   useEffect(() => {
     loadData();
@@ -497,6 +501,7 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 ) : (
+                  <>
                   <div className="rounded-md border overflow-x-auto">
                     <Table>
                       <TableHeader>
@@ -520,8 +525,8 @@ export default function DashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {users.length > 0 ? (
-                          users.map((user) => (
+                        {usersPage.pageItems.length > 0 ? (
+                          usersPage.pageItems.map((user) => (
                             <TableRow
                               key={user.id}
                               className={
@@ -650,6 +655,8 @@ export default function DashboardPage() {
                       </TableBody>
                     </Table>
                   </div>
+                  <Pagination {...usersPage} />
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -788,6 +795,7 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 ) : (
+                  <>
                   <div className="rounded-md border overflow-x-auto">
                     <Table>
                       <TableHeader>
@@ -812,8 +820,8 @@ export default function DashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {products.length > 0 ? (
-                          products.map((product) => (
+                        {productsPage.pageItems.length > 0 ? (
+                          productsPage.pageItems.map((product) => (
                             <TableRow
                               key={product.id}
                               className={
@@ -916,6 +924,8 @@ export default function DashboardPage() {
                       </TableBody>
                     </Table>
                   </div>
+                  <Pagination {...productsPage} />
+                  </>
                 )}
               </CardContent>
             </Card>

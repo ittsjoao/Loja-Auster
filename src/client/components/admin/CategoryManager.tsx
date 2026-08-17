@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil, Trash2, Plus, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { productService } from "@/services/products";
+import { Pagination, usePagination } from "@/components/shared/Pagination";
 import type { Category } from "@/types";
 
 interface Props {
@@ -17,6 +18,7 @@ export function CategoryManager({ categories, onUpdate }: Props) {
   const [editingName, setEditingName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const categoriesPage = usePagination(categories);
 
   const handleAdd = async () => {
     if (!newCategoryName.trim()) return;
@@ -86,7 +88,7 @@ export function CategoryManager({ categories, onUpdate }: Props) {
       </div>
 
       <div className="space-y-2">
-        {categories.map((cat) => (
+        {categoriesPage.pageItems.map((cat) => (
           <div
             key={cat.id}
             className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
@@ -140,6 +142,8 @@ export function CategoryManager({ categories, onUpdate }: Props) {
           </div>
         ))}
       </div>
+
+      <Pagination {...categoriesPage} />
     </div>
   );
 }

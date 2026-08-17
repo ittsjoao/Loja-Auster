@@ -150,6 +150,8 @@ router.post("/redeem", requireAuth, async (req, res) => {
       const transaction = await tx.coinTransaction.create({
         data: {
           userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
           feedzEmployeeId: user.feedzEmployeeId!,
           totalAmount: -totalCost,
           type: 1,
@@ -255,6 +257,8 @@ router.post("/credit", async (req, res) => {
       await tx.coinTransaction.create({
         data: {
           userId: original.userId,
+          userName: original.userName,
+          userEmail: original.userEmail,
           feedzEmployeeId: original.feedzEmployeeId,
           totalAmount: amountToCredit,
           type: 2,
@@ -503,6 +507,8 @@ router.post("/cancel-with-reason", async (req, res) => {
       await tx.coinTransaction.create({
         data: {
           userId: original.userId,
+          userName: original.userName,
+          userEmail: original.userEmail,
           feedzEmployeeId: original.feedzEmployeeId,
           totalAmount: amountToCredit,
           type: 2,

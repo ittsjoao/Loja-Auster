@@ -60,7 +60,10 @@ export interface TransactionItem {
 
 export interface CoinTransaction {
   id: string;
-  userId: string;
+  /** null quando o usuário foi excluído — use userName/userEmail */
+  userId: string | null;
+  userName?: string | null;
+  userEmail?: string | null;
   feedzEmployeeId: number;
   totalAmount: number;
   type: number;

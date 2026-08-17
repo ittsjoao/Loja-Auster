@@ -25,6 +25,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { redemptionService } from "@/services/redemption";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Pagination, usePagination } from "@/components/shared/Pagination";
 import type { CoinTransaction } from "@/types";
 import {
   Clock,
@@ -546,7 +547,7 @@ function OrderDetailsModal({ transaction }: { transaction: CoinTransaction }) {
 
         <Separator />
 
-        {transaction.user && (
+        {(transaction.user || transaction.userName) && (
           <>
             <div>
               <h3 className="text-lg font-semibold mb-3">
@@ -557,13 +558,17 @@ function OrderDetailsModal({ transaction }: { transaction: CoinTransaction }) {
                   <label className="text-sm font-medium text-gray-500">
                     Nome
                   </label>
-                  <p className="text-sm">{transaction.user.name}</p>
+                  <p className="text-sm">
+                    {transaction.user?.name || transaction.userName}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
                     Email
                   </label>
-                  <p className="text-sm">{transaction.user.email}</p>
+                  <p className="text-sm">
+                    {transaction.user?.email || transaction.userEmail}
+                  </p>
                 </div>
               </div>
             </div>
@@ -696,6 +701,12 @@ export default function SalesPage() {
   const statusCounts = transactions.reduce(
     (acc, t) => ({ ...acc, [t.status]: (acc[t.status] || 0) + 1 }),
     {} as Record<string, number>,
+  );
+
+  const salesPage = usePagination(
+    filtered,
+    10,
+    `${statusFilter}|${filters.userName}|${filters.userEmail}|${filters.productName}|${filters.buyDate}`,
   );
 
   const handleUpdateStatus = async (id: string, status: string) => {
@@ -1022,6 +1033,7 @@ export default function SalesPage() {
                     <p className="text-gray-500">Nenhuma venda encontrada</p>
                   </div>
                 ) : (
+                  <>
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1034,7 +1046,7 @@ export default function SalesPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filtered.map((t) => (
+                      {salesPage.pageItems.map((t) => (
                         <TableRow key={t.id}>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -1068,11 +1080,16 @@ export default function SalesPage() {
                           </TableCell>
                           <TableCell>
                             <p className="font-medium">
-                              {t.user?.name || "N/A"}
+                              {t.user?.name || t.userName || "N/A"}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {t.user?.email || "N/A"}
+                              {t.user?.email || t.userEmail || "N/A"}
                             </p>
+                            {!t.user && (
+                              <p className="text-xs text-gray-400 italic">
+                                usuário excluído
+                              </p>
+                            )}
                           </TableCell>
                           <TableCell className="font-medium">
                             {formatMoney(Math.abs(t.totalAmount))}
@@ -1149,6 +1166,8 @@ export default function SalesPage() {
                       ))}
                     </TableBody>
                   </Table>
+                  <Pagination {...salesPage} />
+                  </>
                 )}
               </CardContent>
             </Card>

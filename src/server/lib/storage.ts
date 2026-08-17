@@ -18,20 +18,54 @@ export const MAX_UPLOAD_BYTES = Number(
   process.env.MAX_UPLOAD_BYTES || 10 * 1024 * 1024,
 );
 
-const client = new Client({
-  endPoint: process.env.S3_ENDPOINT || "minio",
-  port: Number(process.env.S3_PORT || 9000),
-  useSSL: process.env.S3_USE_SSL === "true",
-  accessKey: process.env.S3_ACCESS_KEY || "",
-  secretKey: process.env.S3_SECRET_KEY || "",
-});
+/**
+ * O construtor do minio aceita SO host puro: "minio:9000" ou
+ * "http://minio:9000" viram InvalidEndpointError. Como isso rodava no import,
+ * um S3_ENDPOINT digitado como URL derrubava o servidor inteiro no boot - por
+ * isso o endpoint e normalizado aqui e o cliente e criado sob demanda.
+ */
+function parseEndpoint(raw: string) {
+  const url = new URL(/^https?:\/\//.test(raw) ? raw : `http://${raw}`);
+  return {
+    host: url.hostname,
+    port: url.port ? Number(url.port) : undefined,
+    ssl: url.protocol === "https:",
+  };
+}
+
+let client: Client | undefined;
+
+function getClient(): Client {
+  if (client) return client;
+
+  const endpoint = parseEndpoint(process.env.S3_ENDPOINT || "minio");
+  const useSSL = process.env.S3_USE_SSL
+    ? process.env.S3_USE_SSL === "true"
+    : endpoint.ssl;
+  const port =
+    Number(process.env.S3_PORT) || endpoint.port || (useSSL ? 443 : 9000);
+
+  console.log(
+    `[S3] ${useSSL ? "https" : "http"}://${endpoint.host}:${port} bucket=${S3_BUCKET}`,
+  );
+
+  client = new Client({
+    endPoint: endpoint.host,
+    port,
+    useSSL,
+    accessKey: process.env.S3_ACCESS_KEY || "",
+    secretKey: process.env.S3_SECRET_KEY || "",
+  });
+
+  return client;
+}
 
 let bucketReady: Promise<void> | undefined;
 
 function ensureBucket(): Promise<void> {
   bucketReady ??= (async () => {
-    if (!(await client.bucketExists(S3_BUCKET))) {
-      await client.makeBucket(S3_BUCKET);
+    if (!(await getClient().bucketExists(S3_BUCKET))) {
+      await getClient().makeBucket(S3_BUCKET);
     }
   })().catch((error) => {
     // Nao memoiza a falha: a proxima tentativa deve poder reconectar.
@@ -64,7 +98,7 @@ export async function saveImage(file: {
   await ensureBucket();
 
   const storageKey = buildStorageKey(file.folder, file.ext);
-  await client.putObject(S3_BUCKET, storageKey, file.body, file.body.length, {
+  await getClient().putObject(S3_BUCKET, storageKey, file.body, file.body.length, {
     "Content-Type": file.mimeType,
   });
 
@@ -75,10 +109,10 @@ export async function saveImage(file: {
 export async function readImage(
   storageKey: string,
 ): Promise<{ stream: Readable; contentType: string; size: number }> {
-  const stat = await client.statObject(S3_BUCKET, storageKey);
+  const stat = await getClient().statObject(S3_BUCKET, storageKey);
 
   return {
-    stream: await client.getObject(S3_BUCKET, storageKey),
+    stream: await getClient().getObject(S3_BUCKET, storageKey),
     contentType: stat.metaData?.["content-type"] || "application/octet-stream",
     size: stat.size,
   };

@@ -1,0 +1,319 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1786983378856,
+  "projectRoot": "C:\\Users\\joao.silva\\Documents\\projetos\\sites\\Loja-Auster",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "express",
+        "version": "4.21.2",
+        "category": "backend"
+      },
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "5.4.1",
+        "category": "build"
+      }
+    ],
+    "packageManager": "pnpm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "pnpm build",
+    "testCommand": null,
+    "lintCommand": "pnpm lint",
+    "devCommand": "pnpm dev",
+    "scripts": {
+      "dev": "vite",
+      "dev:api": "tsx src/server/index.ts",
+      "dev:full": "concurrently \"npm run dev\" \"npm run dev:api\"",
+      "build": "vite build",
+      "lint": "eslint .",
+      "preview": "vite preview",
+      "db:seed": "tsx prisma/seed.ts",
+      "db:studio": "prisma studio",
+      "db:generate": "prisma generate",
+      "db:push": "prisma db push",
+      "db:migrate": "prisma migrate dev"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "public",
+      "src"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1786983378775,
+      "keyFiles": []
+    },
+    "generated": {
+      "path": "generated",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1786983378776,
+      "keyFiles": []
+    },
+    "prisma": {
+      "path": "prisma",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1786983378776,
+      "keyFiles": [
+        "schema.prisma",
+        "seed.ts"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 9,
+      "lastAccessed": 1786983378777,
+      "keyFiles": [
+        "bg-main.png",
+        "coins-erased.svg",
+        "coins-icon.svg",
+        "login-secondbg.png",
+        "logo-feedz.svg"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1786983378778,
+      "keyFiles": []
+    },
+    "uploads": {
+      "path": "uploads",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1786983378779,
+      "keyFiles": []
+    },
+    "prisma\\migrations": {
+      "path": "prisma\\migrations",
+      "purpose": "Database migrations",
+      "fileCount": 0,
+      "lastAccessed": 1786983378780,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src\\client\\pages\\admin\\DashboardPage.tsx",
+      "accessCount": 9,
+      "lastAccessed": 1786987700142,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\pages\\admin\\SalesPage.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1786987752946,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\components\\admin\\CategoryManager.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1786987712017,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\pages\\OrdersPage.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1786987765516,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.yml",
+      "accessCount": 5,
+      "lastAccessed": 1786989551164,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\routes\\redemption.ts",
+      "accessCount": 4,
+      "lastAccessed": 1786987420237,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\index.ts",
+      "accessCount": 4,
+      "lastAccessed": 1786988367950,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\routes\\upload.ts",
+      "accessCount": 3,
+      "lastAccessed": 1786988351128,
+      "type": "file"
+    },
+    {
+      "path": "dokploy-compose.yml",
+      "accessCount": 3,
+      "lastAccessed": 1786988377701,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 3,
+      "lastAccessed": 1786988404674,
+      "type": "file"
+    },
+    {
+      "path": "prisma\\schema.prisma",
+      "accessCount": 2,
+      "lastAccessed": 1786987406993,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\types\\index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1786987741430,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.yml.example",
+      "accessCount": 2,
+      "lastAccessed": 1786988384533,
+      "type": "file"
+    },
+    {
+      "path": ".env.exemple",
+      "accessCount": 2,
+      "lastAccessed": 1786988393705,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\routes\\images.ts",
+      "accessCount": 2,
+      "lastAccessed": 1786988474364,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\routes\\auth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987128522,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\components\\shared\\ImageUpload.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1786987134614,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\routes\\products.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987169242,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\services\\api.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987181151,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\components\\admin\\UserForm.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1786987181862,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\components\\products\\ProductForm.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1786987182418,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\services\\auth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987225501,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\middleware\\auth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987383357,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\lib\\s3.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987440506,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987467239,
+      "type": "file"
+    },
+    {
+      "path": "src\\client\\components\\shared\\Pagination.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1786987666129,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\lib\\prisma.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786987965002,
+      "type": "file"
+    },
+    {
+      "path": "src\\server\\lib\\storage.ts",
+      "accessCount": 1,
+      "lastAccessed": 1786988340617,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -6,3 +6,4 @@ uploads/
 docs/
 generated/
 docker-compose.yml
+.omc/
